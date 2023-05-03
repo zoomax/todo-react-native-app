@@ -1,25 +1,50 @@
 import {Pressable, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {ITodoItem} from '../../../App';
+import TodoItemInfoModal from '../TodoItemInfoModal';
 
 export interface ITodoItemProps {
   todo: ITodoItem;
-  toggleTodoStatus(): void;
+  toggleItemStatus(todo: ITodoItem): void;
+  editItem(todo: ITodoItem): void;
+  deleteItem(todo: ITodoItem): void;
 }
-const TodoItem: React.FC<ITodoItemProps> = ({todo, toggleTodoStatus}) => {
+const TodoItem: React.FC<ITodoItemProps> = ({
+  todo,
+  toggleItemStatus,
+  deleteItem,
+  editItem,
+}) => {
+  const [infoModalVisiblity, setInfoModalVisiblty] = useState<boolean>(false);
+  const showInfoModal = () => {
+    setInfoModalVisiblty(true);
+  };
+  const closeModal = () => {
+    setInfoModalVisiblty(false);
+  };
   return (
-    <Pressable
-      style={styles.todo}
-      android_ripple={{color: '#cccccc33'}}
-      onPress={toggleTodoStatus}
-    >
-      <Text style={todo.isDone ? styles.title_active : styles.title}>
-        {todo.title}
-      </Text>
-      <View style={todo.isDone ? styles.radio_active : styles.radio}>
-        <View style={todo.isDone ? styles.radio_indecator_active : {}} />
-      </View>
-    </Pressable>
+    <>
+      <Pressable
+        style={styles.todo}
+        android_ripple={{color: '#cccccc33'}}
+        onPress={showInfoModal}
+      >
+        <Text style={todo.isDone ? styles.title_active : styles.title}>
+          {todo.title}
+        </Text>
+        <View style={todo.isDone ? styles.radio_active : styles.radio}>
+          <View style={todo.isDone ? styles.radio_indecator_active : {}} />
+        </View>
+      </Pressable>
+      <TodoItemInfoModal
+        item={todo}
+        visible={infoModalVisiblity}
+        deleteItem={deleteItem}
+        ediItem={editItem}
+        toggleItemStatus={toggleItemStatus}
+        closeModal={closeModal}
+      />
+    </>
   );
 };
 

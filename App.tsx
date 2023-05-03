@@ -10,12 +10,11 @@ import type {PropsWithChildren} from 'react';
 import {
   FlatList,
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   useColorScheme,
   View,
+  Alert,
 } from 'react-native';
 
 import {
@@ -28,6 +27,8 @@ import TodoItem from './src/components/TodoItem';
 import AddButton from './src/components/AddButton';
 import Header from './src/components/Header';
 import FormModal from './src/components/FormModal';
+import {uid} from './src/Utils/uid';
+import TodoItemInfoModal from './src/components/TodoItemInfoModal';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -65,62 +66,58 @@ export interface ITodoItem {
   title: string;
   id: string;
   isDone: boolean;
+  description?: string;
 }
+
 function App(): JSX.Element {
-  const [listItems, setListItems] = useState<ITodoItem[]>([
-    {
-      title: 'todo 1',
-      id: '1',
-      isDone: false,
-    },
-    {
-      title: 'todo 2',
-      id: '2',
-      isDone: true,
-    },
-    {
-      title: 'todo 3',
-      id: '3',
-      isDone: true,
-    },
-    {
-      title: 'todo 4',
-      id: '4',
-      isDone: false,
-    },
-    {
-      title: 'todo 5',
-      id: '5',
-      isDone: false,
-    },
-    {
-      title: 'todo 6',
-      id: '6',
-      isDone: true,
-    },
-    {
-      title: 'todo 7',
-      id: '7',
-      isDone: false,
-    },
-    {
-      title: 'todo ',
-      id: '8',
-      isDone: false,
-    },
-    {
-      title: 'todo 9',
-      id: '9',
-      isDone: false,
-    },
-  ]);
-  const toggleTodoItemStatus = (id: string) => {
+  const [listItems, setListItems] = useState<ITodoItem[]>([]);
+  const [showForm, setShowForm] = useState<boolean>(false);
+  const showErrorAlert = (message: string, title: string) =>
+    Alert.alert(title, message, [
+      {text: 'Dismiss', onPress: () => console.log('OK Pressed')},
+    ]);
+  const showSuccessAlert = () =>
+    Alert.alert('success', 'todo item was created successfully......', [
+      {text: 'Dismiss', onPress: () => setShowForm(false)},
+    ]);
+  const addTodoItem = (item: Partial<ITodoItem>) => {
+    if (item.title) {
+      setListItems(prev => {
+        return [
+          ...prev,
+          {
+            ...item,
+            isDone: false,
+            description: item.description ?? '',
+            id: uid(),
+            title: item.title ?? '',
+          },
+        ];
+      });
+      showSuccessAlert();
+    } else {
+      showErrorAlert('Title Field is required', 'Error');
+    }
+  };
+  const toggleTodoItemStatus = ({id}: ITodoItem) => {
     setListItems(prev =>
       prev.map(item => ({
         ...item,
         isDone: item.id === id ? !item.isDone : item.isDone,
       })),
     );
+  };
+  const deleteTodoItem = ({id}: ITodoItem) => {
+    setListItems(prev => prev.filter(item => id !== item.id));
+  };
+  const editTodoItem = ({id}: ITodoItem) => {
+    // setListItems(prev =>
+    //   prev.map(item => ({
+    //     ...item,
+    //     isDone: item.id === id ? !item.isDone : item.isDone,
+    //   })),
+    // );
+    console.log(`todo item with id ${id} is updated successfully`);
   };
   return (
     <SafeAreaView
@@ -136,21 +133,39 @@ function App(): JSX.Element {
           return (
             <TodoItem
               todo={item}
-              toggleTodoStatus={() => {
-                toggleTodoItemStatus(item.id);
-              }}
+              toggleItemStatus={toggleTodoItemStatus}
+              editItem={editTodoItem}
+              deleteItem={deleteTodoItem}
             />
           );
         }}
         keyExtractor={item => item.id}
       />
       {/* <TodoItem /> */}
-      <AddButton />
+      <AddButton onPress={() => setShowForm(true)} />
       <FormModal
-        addTodo={(todo: ITodoItem) => {}}
-        isVisible={true}
-        closeModal={() => {}}
+        addTodo={(todo: Partial<ITodoItem>) => {
+          console.log('item added ..... ');
+          addTodoItem(todo);
+        }}
+        isVisible={showForm}
+        closeModal={() => {
+          setShowForm(prev => !prev);
+        }}
       />
+      {/* <TodoItemInfoModal
+        visible={true}
+        ediItem={(item: ITodoItem) => {}}
+        deleteItem={(item: ITodoItem) => {}}
+        toggleItemStatus={(item: ITodoItem) => {}}
+        item={{
+          id: 'sdfghjk',
+          title: 'Wash dished',
+          // description: 'use soap and sponge',
+          isDone: false,
+        }}
+        closeModal={() => {}}
+      /> */}
     </SafeAreaView>
   );
 }

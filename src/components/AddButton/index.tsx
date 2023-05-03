@@ -1,7 +1,10 @@
 import {ImageBackground, Pressable, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 
-const AddButton = () => {
+export interface IAddButtonProps {
+  onPress(): void;
+}
+const AddButton: React.FC<IAddButtonProps> = ({onPress}: IAddButtonProps) => {
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -15,17 +18,30 @@ const AddButton = () => {
         source={require('../../assets/images/white_bg.jpg')}
         blurRadius={10}
       >
-        <Pressable
-          style={styles.button}
-          android_ripple={{
-            color: '#46BE8B',
+        <View
+          style={{
+            height: 70,
+            width: 70,
+            borderRadius: 70 / 2,
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'hidden',
           }}
-          onPress={() => {
-            console.log('add button got pressed....!');
-          }}
+          // this view is to overcome android ripple effect from over flowing the button
         >
-          <Text style={styles.button_text}>+</Text>
-        </Pressable>
+          <Pressable
+            style={styles.button}
+            android_ripple={{
+              color: '#46BE8B',
+            }}
+            onPress={() => {
+              console.log('add button got pressed....!');
+              onPress();
+            }}
+          >
+            <Text style={styles.button_text}>+</Text>
+          </Pressable>
+        </View>
       </ImageBackground>
     </View>
   );
@@ -54,6 +70,7 @@ const styles = StyleSheet.create({
     borderRadius: 70 / 2,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
     lineHeight: 70,
   },
   button_text: {
