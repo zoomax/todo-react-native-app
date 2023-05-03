@@ -6,12 +6,13 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {ITodoItem} from '../../../App';
+import CustomTextInput from '../TextInput';
 
 export interface IModalFormProps {
   isVisible: boolean;
-  addTodo: (todo: ITodoItem) => void;
+  addTodo: (todo: Partial<ITodoItem>) => void;
   closeModal(): void;
 }
 
@@ -20,8 +21,12 @@ const FormModal: React.FC<IModalFormProps> = ({
   addTodo,
   closeModal,
 }: IModalFormProps) => {
+  const [payload, setPayload] = useState<Partial<ITodoItem>>({});
+  const onInputTextChange = (text: string, name: string) => {
+    setPayload(prev => ({...prev, [name]: text}));
+  };
   return (
-    <Modal transparent={true} visible={false} animationType="slide">
+    <Modal transparent={true} visible={isVisible} animationType="slide">
       <View style={styles.container}>
         <View style={styles.formWrapper}>
           <View style={styles.header}>
@@ -29,6 +34,7 @@ const FormModal: React.FC<IModalFormProps> = ({
             <Pressable
               onPress={() => {
                 console.log('modal got dismissed .....');
+                closeModal();
               }}
             >
               <Text
@@ -36,26 +42,34 @@ const FormModal: React.FC<IModalFormProps> = ({
                   color: '#50E3A4',
                 }}
               >
-                {' '}
-                Dismiss{' '}
+                Dismiss
               </Text>
             </Pressable>
           </View>
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}> Title</Text>
-            <TextInput style={styles.input} placeholder="Todo Title ...." />
-          </View>
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}> Discription </Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Todo Description ...."
-            />
-          </View>
+          <CustomTextInput
+            name={'title'}
+            placeholder={'add Todo Title ....'}
+            onChange={onInputTextChange}
+            required={true}
+            value={payload.title}
+            label="Title"
+          />
+          <CustomTextInput
+            name={'description'}
+            placeholder="Todo Description ...."
+            onChange={onInputTextChange}
+            required={true}
+            value={payload.description}
+            label="Description"
+          />
           <View style={styles.inputWrapper}>
             <Pressable
               onPress={() => {
                 console.log('todo was added successfully......');
+                if (payload.title) {
+                  addTodo(payload);
+                  setPayload({});
+                }
               }}
               style={styles.btn}
             >

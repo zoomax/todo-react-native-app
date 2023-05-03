@@ -1,17 +1,18 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
+import {format} from 'date-fns';
 
 const Header = () => {
   return (
     <View style={styles.header}>
       <View style={styles.header_Date}>
-        <Text style={styles.day}>12</Text>
+        <Text style={styles.day}>{format(new Date(), 'dd')}</Text>
         <View style={styles.date}>
-          <Text style={styles.month}>Jan</Text>
-          <Text style={styles.year}>2023</Text>
+          <Text style={styles.month}>{format(new Date(), 'MMM')}</Text>
+          <Text style={styles.year}>{format(new Date(), 'yyyy')}</Text>
         </View>
       </View>
-      <Text style={styles.header_day}>Tuesday</Text>
+      <Text style={styles.header_day}>{format(new Date(), 'eeee')}</Text>
     </View>
   );
 };
