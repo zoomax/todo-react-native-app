@@ -27,6 +27,7 @@ import {
 import TodoItem from './src/components/TodoItem';
 import AddButton from './src/components/AddButton';
 import Header from './src/components/Header';
+import FormModal from './src/components/FormModal';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -145,6 +146,11 @@ function App(): JSX.Element {
       />
       {/* <TodoItem /> */}
       <AddButton />
+      <FormModal
+        addTodo={(todo: ITodoItem) => {}}
+        isVisible={true}
+        closeModal={() => {}}
+      />
     </SafeAreaView>
   );
 }
