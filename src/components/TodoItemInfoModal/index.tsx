@@ -1,6 +1,7 @@
 import {Image, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {ITodoItem} from '../../../App';
+import UpdateFormModal from '../UpdateFormModal';
 
 export interface ITodoItemInfoModalProps {
   visible: boolean;
@@ -18,8 +19,8 @@ const TodoItemInfoModal: React.FC<ITodoItemInfoModalProps> = ({
   visible,
   item,
 }) => {
-
   const {title, description} = item;
+  const [showEdit, setShowEdit] = useState<boolean>(false);
   return (
     <Modal visible={visible} transparent={true}>
       <View style={styles.container}>
@@ -27,7 +28,7 @@ const TodoItemInfoModal: React.FC<ITodoItemInfoModalProps> = ({
           <View style={styles.header}>
             <Text style={styles.title}>{title}</Text>
             <Pressable onPress={closeModal}>
-              <Text style={styles.dismissBtn}>{}</Text>
+              <Text style={styles.dismissBtn}>dismiss</Text>
             </Pressable>
           </View>
 
@@ -50,8 +51,10 @@ const TodoItemInfoModal: React.FC<ITodoItemInfoModalProps> = ({
             </Pressable>
             <Pressable
               onPress={() => {
-                ediItem(item);
-                closeModal();
+                // ediItem(item);
+                // closeModal();
+                setShowEdit(true);
+                console.log('edit button got pressed');
               }}
               style={styles.option}
             >
@@ -77,6 +80,19 @@ const TodoItemInfoModal: React.FC<ITodoItemInfoModalProps> = ({
           </View>
         </View>
       </View>
+      <UpdateFormModal
+        todo={item}
+        updateTodo={(todo: ITodoItem) => {
+          console.log('item added ..... ');
+          ediItem(todo);
+          setShowEdit(prev => !prev);
+          closeModal();
+        }}
+        isVisible={showEdit}
+        closeModal={() => {
+          setShowEdit(prev => !prev);
+        }}
+      />
     </Modal>
   );
 };
