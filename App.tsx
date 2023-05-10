@@ -110,14 +110,14 @@ function App(): JSX.Element {
   const deleteTodoItem = ({id}: ITodoItem) => {
     setListItems(prev => prev.filter(item => id !== item.id));
   };
-  const editTodoItem = ({id}: ITodoItem) => {
-    // setListItems(prev =>
-    //   prev.map(item => ({
-    //     ...item,
-    //     isDone: item.id === id ? !item.isDone : item.isDone,
-    //   })),
-    // );
-    console.log(`todo item with id ${id} is updated successfully`);
+  const editTodoItem = (payload: ITodoItem) => {
+    setListItems(prev =>
+      prev.map(item => ({
+        ...item,
+        ...payload,
+      })),
+    );
+    console.log(`todo item with id ${payload.id} is updated successfully`);
   };
   return (
     <SafeAreaView
@@ -143,6 +143,7 @@ function App(): JSX.Element {
       />
       {/* <TodoItem /> */}
       <AddButton onPress={() => setShowForm(true)} />
+
       <FormModal
         addTodo={(todo: Partial<ITodoItem>) => {
           console.log('item added ..... ');
@@ -153,6 +154,7 @@ function App(): JSX.Element {
           setShowForm(prev => !prev);
         }}
       />
+
       {/* <TodoItemInfoModal
         visible={true}
         ediItem={(item: ITodoItem) => {}}
